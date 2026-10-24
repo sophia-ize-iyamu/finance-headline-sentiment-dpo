@@ -1,0 +1,9 @@
+base, new prompt (fp32 CPU, 133s): valid JSON 40/40, correct 7/40
+labels given: [('bullish', 35), ('bearish', 5)]
+gold labels: [('neutral', 29), ('bearish', 6), ('bullish', 5)]
+   '{"label": "bullish"}'
+   '{"label": "bullish"}'
+   '{"label": "bullish"}'
+   '{"label": "bullish"}'
+   '{"label": "bullish"}'
+   '{"label": "bullish"}'

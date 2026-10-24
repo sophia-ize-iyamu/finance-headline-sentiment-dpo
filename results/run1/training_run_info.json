@@ -1,0 +1,6 @@
+{
+ "num_processes": 2,
+ "distributed_type": "DistributedType.DEEPSPEED",
+ "train_rows": 2000,
+ "global_step": 63
+}

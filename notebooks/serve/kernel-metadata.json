@@ -1,0 +1,17 @@
+{
+ "id": "sophiaizeiyamu/finance-headline-sentiment-dpo-serving",
+ "title": "Finance Headline Sentiment DPO Serving",
+ "code_file": "serve.ipynb",
+ "language": "python",
+ "kernel_type": "notebook",
+ "is_private": true,
+ "enable_gpu": true,
+ "enable_internet": true,
+ "machine_shape": "NvidiaTeslaT4",
+ "dataset_sources": [],
+ "competition_sources": [],
+ "kernel_sources": [
+  "sophiaizeiyamu/finance-headline-sentiment-dpo-training"
+ ],
+ "model_sources": []
+}

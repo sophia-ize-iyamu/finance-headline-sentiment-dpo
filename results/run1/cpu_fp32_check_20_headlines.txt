@@ -1,0 +1,18 @@
+== base (fp32 CPU, 132s): valid JSON 0/20, correct 0/20
+    '{"label": "bearish}'
+    '{"label": "bearish}'
+    '{"label": "bearish}'
+    '{"label": "bearish}'
+    '{"label": "bearish}'
+    '{"label": "bearish}'
+    '{"label": "bearish}'
+    '{"label": "bearish}'
+== dpo (fp32 CPU, 76s): valid JSON 0/20, correct 0/20
+    '{"label": negative}'
+    '{"label": "bullish}'
+    '{"label": negative}'
+    '{"label": negative}'
+    '{"label": negative}'
+    '{"label": negative}'
+    '{"label": negative}'
+    '{"label": negative}'

@@ -1,0 +1,22 @@
+{
+ "base": {
+  "n": 500,
+  "valid_json_rate": 0.996,
+  "accuracy": 0.382,
+  "review_rate": 0.7,
+  "errors": 309,
+  "errors_in_review": 281,
+  "headlines_per_second": 184.79770792180673,
+  "tensor_parallel_size": 2
+ },
+ "dpo": {
+  "n": 500,
+  "valid_json_rate": 1.0,
+  "accuracy": 0.846,
+  "review_rate": 0.202,
+  "errors": 77,
+  "errors_in_review": 24,
+  "headlines_per_second": 381.22527376696615,
+  "tensor_parallel_size": 2
+ }
+}

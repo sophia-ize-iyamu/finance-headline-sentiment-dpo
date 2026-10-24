@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 860" width="960" height="860" role="img" aria-label="Process flow: headlines are made into preference pairs, training runs on 2 GPUs in Kaggle notebook 1, the merged model is served with vLLM in Kaggle notebook 2, and every answer is scored with a strict checker and a word-list classifier">
+  <title>Process flow</title>
+  <desc>Step 1, data: the twitter-financial-news-sentiment dataset has 9,543 training and 2,388 validation headlines, labelled bearish, bullish or neutral. Step 2, preference pairs: each of 2,000 training headlines has a chosen answer and a rejected answer. The chosen answer is the correct label in JSON. The rejected answer is a wrong label in JSON for 1,000 pairs, and a sentence with the correct label for the other 1,000. Kaggle notebook 1 is for training, on 2 T4 GPUs. Step 3, training: a LoRA adapter on Qwen2.5-0.5B-Instruct is trained with Hugging Face TRL's DPOTrainer. The loss is DPO plus an SFT term on the chosen answers. Training is launched with Accelerate and DeepSpeed ZeRO-2 in fp16, and tracked in Weights and Biases. Step 4, merge: the adapter is merged into the base model. The 1 GB result is saved as the notebook's output, then uploaded to Hugging Face. Kaggle notebook 2 is for serving and scoring, on 2 T4 GPUs, and notebook 1's output is loaded into it. Step 5, serve: the base model and then the fine-tuned model are served with vLLM, each in its own process. Decoding is greedy, on 500 held-out validation headlines. Step 6, score: an answer is counted only if all of it parses as JSON with an allowed label. The valid-JSON rate and accuracy are computed from this check. A word-list label is also set from counts of bullish and bearish words. Answers with a different label are added to a review queue.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto">
+      <path d="M0,1.5 L10,5 L0,8.5 Z" fill="#57606A"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="960" height="860" fill="#FFFFFF"/>
+  <g font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" fill="#1F2328" style="font-variant-ligatures: none">
+    <text x="40" y="34" font-size="18" font-weight="700">Process flow</text>
+    <text x="40" y="57" font-size="13" fill="#57606A">Notebook 1's output is loaded into notebook 2.</text>
+
+    <!-- 1 Data -->
+    <rect x="40" y="74" width="880" height="56" rx="8" fill="#F6F8FA" stroke="#D0D7DE"/>
+    <circle cx="66" cy="102" r="12" fill="#1F2328"/>
+    <text x="66" y="107" font-size="14" fill="#FFFFFF" font-weight="700" text-anchor="middle">1</text>
+    <text x="92" y="107" font-size="16" font-weight="700">Data</text>
+    <text x="250" y="98" font-size="13"><tspan font-family="Consolas, Menlo, monospace">zeroshot/twitter-financial-news-sentiment</tspan> (MIT licence)</text>
+    <text x="250" y="117" font-size="13" fill="#57606A">9,543 training and 2,388 validation headlines, labelled bearish, bullish or neutral</text>
+    <line x1="480" y1="130" x2="480" y2="151" stroke="#57606A" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+    <!-- 2 Pairs -->
+    <rect x="40" y="152" width="880" height="76" rx="8" fill="#F6F8FA" stroke="#D0D7DE"/>
+    <circle cx="66" cy="180" r="12" fill="#1F2328"/>
+    <text x="66" y="185" font-size="14" fill="#FFFFFF" font-weight="700" text-anchor="middle">2</text>
+    <text x="92" y="185" font-size="16" font-weight="700">Preference pairs</text>
+    <text x="250" y="176" font-size="13">2,000 training headlines. Chosen answer: the correct label as JSON, <tspan font-family="Consolas, Menlo, monospace">{"label": "bullish"}</tspan></text>
+    <text x="250" y="196" font-size="13">Rejected answer: a wrong label in JSON, or a sentence with the correct label (1,000 pairs each)</text>
+    <text x="250" y="216" font-size="13" fill="#57606A">The label and the answer format are trained together</text>
+    <line x1="480" y1="228" x2="480" y2="257" stroke="#57606A" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+    <!-- Notebook 1 band -->
+    <rect x="24" y="258" width="912" height="246" rx="12" fill="#F3F8FD" stroke="#0969DA" stroke-width="1.5"/>
+    <text x="40" y="284" font-size="15" fill="#0969DA" font-weight="700">Kaggle notebook 1: training</text>
+    <text x="40" y="303" font-size="13" fill="#57606A">2 T4 GPUs</text>
+
+    <rect x="40" y="316" width="880" height="96" rx="8" fill="#FFFFFF" stroke="#D0D7DE"/>
+    <circle cx="66" cy="344" r="12" fill="#1F2328"/>
+    <text x="66" y="349" font-size="14" fill="#FFFFFF" font-weight="700" text-anchor="middle">3</text>
+    <text x="92" y="349" font-size="16" font-weight="700">Training</text>
+    <text x="250" y="340" font-size="13">Hugging Face TRL <tspan font-family="Consolas, Menlo, monospace">DPOTrainer</tspan>, LoRA rank 16, on Qwen2.5-0.5B-Instruct</text>
+    <text x="250" y="360" font-size="13">Accelerate with DeepSpeed ZeRO-2 across both GPUs, in fp16 (T4s have no bf16)</text>
+    <text x="250" y="380" font-size="13">Loss: DPO plus an SFT term on the chosen answers (32 pairs per step, 63 steps)</text>
+    <text x="250" y="400" font-size="13" fill="#57606A">Loss and rewards logged to Weights &amp; Biases</text>
+    <line x1="480" y1="412" x2="480" y2="427" stroke="#57606A" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+    <rect x="40" y="428" width="880" height="62" rx="8" fill="#FFFFFF" stroke="#D0D7DE"/>
+    <circle cx="66" cy="459" r="12" fill="#1F2328"/>
+    <text x="66" y="464" font-size="14" fill="#FFFFFF" font-weight="700" text-anchor="middle">4</text>
+    <text x="92" y="464" font-size="16" font-weight="700">Merge</text>
+    <text x="250" y="455" font-size="13">The adapter is merged into the base model (1 GB in fp16)</text>
+    <text x="250" y="475" font-size="13" fill="#57606A">Saved as notebook output, then uploaded to Hugging Face</text>
+    <line x1="480" y1="504" x2="480" y2="533" stroke="#57606A" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+    <!-- Notebook 2 band -->
+    <rect x="24" y="534" width="912" height="268" rx="12" fill="#FFF8F1" stroke="#BC4C00" stroke-width="1.5"/>
+    <text x="40" y="560" font-size="15" fill="#BC4C00" font-weight="700">Kaggle notebook 2: serving and scoring</text>
+    <text x="40" y="579" font-size="13" fill="#57606A">2 T4 GPUs</text>
+
+    <rect x="40" y="592" width="880" height="76" rx="8" fill="#FFFFFF" stroke="#D0D7DE"/>
+    <circle cx="66" cy="620" r="12" fill="#1F2328"/>
+    <text x="66" y="625" font-size="14" fill="#FFFFFF" font-weight="700" text-anchor="middle">5</text>
+    <text x="92" y="625" font-size="16" font-weight="700">Serve</text>
+    <text x="250" y="616" font-size="13">500 held-out validation headlines, served with vLLM and greedy decoding</text>
+    <text x="250" y="636" font-size="13">The base model, then the fine-tuned model, each in its own process</text>
+    <text x="250" y="656" font-size="13" fill="#57606A">Timing starts after an untimed run on 16 headlines, so start-up time is excluded</text>
+    <line x1="480" y1="668" x2="480" y2="683" stroke="#57606A" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+    <rect x="40" y="684" width="880" height="104" rx="8" fill="#FFFFFF" stroke="#D0D7DE"/>
+    <circle cx="66" cy="712" r="12" fill="#1F2328"/>
+    <text x="66" y="717" font-size="14" fill="#FFFFFF" font-weight="700" text-anchor="middle">6</text>
+    <text x="92" y="717" font-size="16" font-weight="700">Score</text>
+    <text x="250" y="708" font-size="13"><tspan font-weight="700">Strict checker:</tspan> an answer is counted only if all of it parses as JSON with an allowed label</text>
+    <text x="250" y="728" font-size="13" fill="#57606A">Results: the valid-JSON rate and accuracy</text>
+    <text x="250" y="752" font-size="13"><tspan font-weight="700">Word-list classifier:</tspan> a label from counts of bullish and bearish words</text>
+    <text x="250" y="772" font-size="13" fill="#57606A">Answers with a different label are added to a review queue, as in Reconcile</text>
+  </g>
+  <text x="40" y="836" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="12" fill="#57606A">Code: src/finsent.py (pairs, checker, classifier and scoring), src/train_dpo.py, src/run_vllm.py and make_notebooks.py (for both notebooks).</text>
+</svg>
